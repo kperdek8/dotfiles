@@ -1,0 +1,211 @@
+;; TODO: Fix workspaces to be sorted by id
+(include "widgets/bar/icons.yuck")
+
+(defwindow bar
+    :monitor 0
+    :geometry (geometry :x "0%" :y "0%" :width "100%" :height "32px" :anchor "top center")
+    :stacking "bg"
+    :exclusive "true"
+    (parent)
+)
+
+(defwidget parent []
+    (centerbox :orientation "h"
+      (leftside)
+      (middle)
+      (rightside)
+    )
+)
+
+(defwidget rightside []
+  (box :halign "end" :space-evenly false
+    (system)
+    (kb_layout)
+    (clock)
+    (power)
+  )
+)
+
+(defwidget middle []
+  (box :halign "center" :space-evenly false
+    (workspaces)
+    (current_app)
+  )
+)
+
+
+(defwidget leftside []
+  (box :halign "start" :space-evenly false
+    (pacman)
+    (sys_tray)
+    (internet)
+  )
+)
+
+;; System information
+(defwidget system [] 
+  (eventbox
+    (box :class "system" :space-evenly false :spacing 6
+      (volume)
+      (screen_brightness)
+      (battery)
+    )
+  ) 
+)
+
+;; Power button
+
+(defwidget power []
+  (eventbox
+    (box :class "power"
+      (button :onclick "~/.config/wlogout/launch.sh" 
+        "⏻" 
+      )
+    )
+  )
+)
+
+;; Keyboard layout
+
+(defwidget kb_layout []
+  (eventbox
+    (box :class "module"
+      kb
+    )
+  )
+)
+(defpoll kb :interval "0.5s" "scripts/kb_layout.sh")
+
+;; Clock
+(defwidget clock []
+  (eventbox
+    (box :class "clock"
+      (label :text "${time}" :class "clock-text")
+    )
+  )
+)
+(defpoll time :interval "1s" `date +"󰥔 %H:%M 󰃭 %d %b %Y"`)
+
+;; Battery
+
+(defwidget battery []
+  (eventbox
+    (box :space-evenly false
+      (label :text "${battery_status == "Charging" ? "${battery_charging_icon}"
+                    : battery_cap <= '10' ? "${battery_0_icon}"
+                    : battery_cap <= '20' ? "${battery_10_icon}"
+                    : battery_cap <= '30' ? "${battery_20_icon}"
+                    : battery_cap <= '40' ? "${battery_30_icon}"
+                    : battery_cap <= '50' ? "${battery_40_icon}"
+                    : battery_cap <= '60' ? "${battery_50_icon}"
+                    : battery_cap <= '70' ? "${battery_60_icon}"
+                    : battery_cap <= '80' ? "${battery_70_icon}"
+                    : battery_cap <= '90' ? "${battery_80_icon}"
+                    : "${battery_90_icon}"}" :class "icon-spacing-fix")
+      (label :text "${battery_cap}%")
+    )
+  )
+)
+(defpoll battery_cap :initial 0 :interval "15s" "scripts/battery.sh --capacity")
+(defpoll battery_status :interval "1s" "scripts/battery.sh --status")
+
+;; Screen brightness
+
+(defwidget screen_brightness []
+  (eventbox
+    (box
+      (label :text "${current_brightness <= '33' ? "${brightness_low_icon}" 
+                    : current_brightness <= '66' ? "${brightness_medium_icon}" 
+                    : "${brightness_high_icon}"}${current_brightness}%")
+      )
+  )
+)
+(defpoll current_brightness :initial 0 :interval "1s" "scripts/brightness.sh") 
+
+;; Volume
+
+(defwidget volume []
+  (eventbox
+    (box
+      (label :text "${volume_status == 'off' ? "${volume_off_icon}"
+                    : current_volume <= '33' ? "${volume_low_icon}" 
+                    : current_volume <= '66' ? "${volume_medium_icon}" 
+                    : "${volume_high_icon}"}${current_volume}%")
+    )
+  )
+)
+(defpoll current_volume :initial 0 :interval "1s" "scripts/volume.sh --get")
+(defpoll volume_status :interval "1s" "scripts/volume.sh --status")
+
+;; Currently opened application
+
+(defwidget current_app []
+  (eventbox 
+    (box :class "current-app" :space-evenly false
+      ;; Don't add white space if app is empty string
+      (label :text {strlength(app) > 0 ? "󰣇 " : "󰣇"})
+      (label :text "${app}")
+    )
+  )
+)
+
+(deflisten app :initial " " "scripts/get-app.sh")
+
+;; Internet
+
+(defwidget internet []
+  (eventbox 
+    (box :class "wifi"
+      (label :text "${wifi_name} ${signal == 'none' ? "${wifi_none_icon }"
+                                  : signal <= '25' ? "${wifi_low_icon}" 
+                                  : signal <= '50' ? "${wifi_medium_icon}" 
+                                  : signal <= '75' ? "${wifi_high_icon}" 
+                                  : "${wifi_max_icon}"}")
+    )
+  )
+)
+(defpoll wifi_name :initial "No Internet" :interval "5s" "scripts/wifi.sh --network")
+(defpoll signal :initial "0" :interval "5s" "scripts/wifi.sh --signal")
+
+;; System tray
+
+(deflisten systray-items-count :initial "0" "scripts/systray.sh")
+
+(defwidget sys_tray []
+  (eventbox
+    (systray :class "tray" :visible {systray-items-count > 0 ? true : false})
+  )
+)
+
+;; Pacman
+
+(defwidget pacman []
+  (eventbox
+    (box :class "update"
+      (label :text "${updates == 0 ? "${updates_none_icon}" : "${updates_available_icon}"}")
+      (label :text "${updates}")
+    )
+  )
+)
+
+(defpoll updates :initial 0 :interval "1m" "scripts/arch_updates.sh")
+
+
+;; Workspaces
+
+(defwidget workspaces []
+  (eventbox :onscroll "bash ~/.config/eww/scripts/change-active-workspace {} ${current_workspace}"
+    (box :space-evenly true :class "module"
+      (for workspace in workspaces
+        (eventbox :visible {workspace >= 0 ? "true" : "false"} :onclick "hyprctl dispatch workspace ${workspace}"
+          (box 
+            (label :class {workspace == current_workspace ? "workspace-active" : "workspace-inactive"} :text "${workspace == current_workspace ? "${workspace_active_icon}" : "${workspace_inactive_icon}"}")
+          )
+        )
+      )
+    )
+  )
+)
+(deflisten workspaces :initial "[]" "scripts/get-workspaces.sh")
+(deflisten current_workspace :initial "1" "scripts/get-active-workspace.sh")
+

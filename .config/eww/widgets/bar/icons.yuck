@@ -1,0 +1,33 @@
+;; Updates
+(defvar updates_available_icon "󰚰 ")
+(defvar updates_none_icon "󰄴 ")
+;; Wi-fi
+(defvar wifi_none_icon "󰤮 ")
+(defvar wifi_low_icon "󰤟 ")
+(defvar wifi_medium_icon "󰤢 ")
+(defvar wifi_high_icon "󰤥 ")
+(defvar wifi_max_icon "󰤨 ")
+;; Workspace
+(defvar workspace_active_icon " ")
+(defvar workspace_inactive_icon " ")
+;; Volume
+(defvar volume_off_icon "󰝟 ")
+(defvar volume_low_icon "󰕿 ")
+(defvar volume_medium_icon "󰖀 ")
+(defvar volume_high_icon "󰕾 ")
+;; Brightness
+(defvar brightness_low_icon "󰃞 ")
+(defvar brightness_medium_icon "󰃟 ")
+(defvar brightness_high_icon "󰃠 ")
+;; Battery
+(defvar battery_charging_icon "󰂄")
+(defvar battery_0_icon "󰂎")
+(defvar battery_10_icon "󰁺")
+(defvar battery_20_icon "󰁻")
+(defvar battery_30_icon "󰁼")
+(defvar battery_40_icon "󰁽")
+(defvar battery_50_icon "󰁾")
+(defvar battery_60_icon "󰁿")
+(defvar battery_70_icon "󰂀")
+(defvar battery_80_icon "󰂁")
+(defvar battery_90_icon "󰁹")

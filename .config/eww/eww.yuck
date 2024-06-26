@@ -1,0 +1,20 @@
+; Add other modules
+(include "widgets/bar/bar.yuck")
+
+(defwindow example
+           :monitor 0
+           :geometry (geometry :x "0%"
+                               :y "20px"
+                               :width "90%"
+                               :height "30px"
+                               :anchor "top center")
+           :stacking "overlay"
+           :reserve (struts :distance "40px" :side "top")
+           :windowtype "dock"
+           :wm-ignore false
+  (example-closer))
+
+(defwidget closer [window]
+  (eventbox :onclick "eww close ${window} && eww close ${window}-closer")
+)
+

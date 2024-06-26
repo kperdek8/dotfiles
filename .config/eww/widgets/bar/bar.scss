@@ -1,0 +1,120 @@
+/** bar.scss **/
+
+@import '/home/krzysztof/.cache/wal/colors.scss';
+@import './colors.scss'
+/** Pywal colorscheme **/
+$primary-color: desaturate(lighten($color11, 5%), 10%);
+$secondary-color: desaturate($color14, 10%);
+$bg-color: $background;
+$text-color: $secondary-color;
+
+/* Universal Styling */
+
+*{
+  all: unset;
+  font-family: "CaskaydiaCove Nerd Font", monospace;
+  font-weight: bold;
+  font-size: 15px;
+  color: $text-color;
+}
+
+
+@mixin box-shadow($color) {
+  box-shadow: inset -1px -2px 1px 1px $color;
+}
+
+.bar {
+  background-color: transparent;
+  margin: 2px 15px;
+}
+
+.module {
+  background-color: $bg-color;
+  border-radius: 15px;
+  @include box-shadow($primary-color);
+  margin: 0 5px;
+  padding: 5px 15px;
+  min-width: 20px;
+}
+
+tooltip {
+  background-color: $bg-color;
+  border-radius: 20px;
+  box-shadow: inset 0px -2px 1px 1.5px $primary-color;
+}
+
+.icon-spacing-fix {
+  margin-right: 0.25em;
+}
+
+.workspace-active {
+
+}
+
+.workspace-inactive {
+  color: desaturate($text-color, 70%);
+  margin: 0 2px;
+}
+
+.update {
+  @extend .module;
+}
+
+.tray {
+  @extend .module;
+}
+
+.tray menu {
+  background-color: transparentize($bg-color, 0.1);
+  border-radius: 20px;
+  border: 2px solid $primary-color;
+  padding: 10px;
+
+  >menuitem {
+    padding: 0px 5px;
+
+      &:disabled label {
+          color: gray;
+      }
+
+      &:hover {
+          background-color: $primary-color;
+      }
+  }
+
+}
+
+
+.wifi {
+  @extend .module;
+}
+
+.workspace {
+  @extend .module;
+}
+
+.current-app {
+  @extend .module;
+}
+
+.system {
+  @extend .module;
+}
+
+.volume {
+}
+
+.brightness {
+}
+
+.battery {
+}
+
+.clock {
+  @extend .module;
+}
+
+.power {
+  @extend .module;
+}
+
